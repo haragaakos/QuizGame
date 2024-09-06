@@ -8,13 +8,15 @@ namespace QuizGame.Server.Models
         [Key]
         public int id { get; set; }
         [Column(TypeName = "char(50)")]
+        [Required]
         public string name { get; set; }
         [Column(TypeName = "char(50)")]
+        [Required]
         public string email { get; set; }
         [Column(TypeName = "char(50)")]
-        public string password { get; set; }
-        public int score { get; set; }
-        public int quiz_time { get; set; }
+        public string? password { get; set; }
+        public int? score { get; set; }
+        public int? quiz_time { get; set; }
 
     }
 }

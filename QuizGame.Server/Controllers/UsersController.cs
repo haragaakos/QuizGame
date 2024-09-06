@@ -15,7 +15,7 @@ namespace QuizGame.Server.Controllers
             _context = context;
         }
 
-        // GET: api/Felhasznalok
+        // GET: api/Users
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Users>>> GetUsers()
         {
@@ -26,7 +26,7 @@ namespace QuizGame.Server.Controllers
             return await _context.Users.ToListAsync();
         }
 
-        // GET: api/Felhasznalok/5
+        // GET: api/Users/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Users>> GetUsers(int id)
         {
@@ -35,16 +35,14 @@ namespace QuizGame.Server.Controllers
                 return NotFound();
             }
             var users = await _context.Users.FindAsync(id);
-
             if (users == null)
             {
                 return NotFound();
             }
-
             return users;
         }
 
-        // PUT: api/Felhasznalok/5       
+        // PUT: api/Users/5       
         [HttpPut("{id}")]
         public async Task<IActionResult> PutUsers(int id, Users users)
         {
@@ -52,9 +50,7 @@ namespace QuizGame.Server.Controllers
             {
                 return BadRequest();
             }
-
             _context.Entry(users).State = EntityState.Modified;
-
             try
             {
                 await _context.SaveChangesAsync();
@@ -70,21 +66,14 @@ namespace QuizGame.Server.Controllers
                     throw;
                 }
             }
-
             return NoContent();
         }
 
-        private bool UsersExists(int id)
-        {
-            throw new NotImplementedException();
-        }
-
-        // POST: api/Felhasznalok
-        
+        // POST: api/Users
         [HttpPost]
         public async Task<ActionResult<Users>> PostUsers(Users users)
         {
-            var temp = _context.Users.Where(x => x.name == users.name && x.email == users.email).FirstOrDefault();
+            var temp = await _context.Users.FirstOrDefaultAsync(x => x.name == users.name && x.email == users.email);
             if (temp == null)
             {
                 _context.Users.Add(users);
@@ -95,32 +84,29 @@ namespace QuizGame.Server.Controllers
                 users = temp;
             }
             return Ok(users);
+        }
 
-
-            // DELETE: api/Felhasznalok/5
-            [HttpDelete("{id}")]
-             async Task<IActionResult> DeleteUsers(int id)
+        // DELETE: api/Users/5
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteUsers(int id)
+        {
+            if (_context.Users == null)
             {
-                if (_context.Users == null)
-                {
-                    return NotFound();
-                }
-                var users = await _context.Users.FindAsync(id);
-                if (users == null)
-                {
-                    return NotFound();
-                }
-
-                _context.Users.Remove(users);
-                await _context.SaveChangesAsync();
-
-                return NoContent();
+                return NotFound();
             }
-
-             bool UsersExists(int id)
+            var users = await _context.Users.FindAsync(id);
+            if (users == null)
             {
-                return (_context.Users?.Any(e => e.id == id)).GetValueOrDefault();
+                return NotFound();
             }
+            _context.Users.Remove(users);
+            await _context.SaveChangesAsync();
+            return NoContent();
+        }
+
+        private bool UsersExists(int id)
+        {
+            return (_context.Users?.Any(e => e.id == id)).GetValueOrDefault();
         }
     }
 }
